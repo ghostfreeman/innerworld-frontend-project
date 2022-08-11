@@ -2,7 +2,10 @@
 
 ## Running this app
 
-Make sure the docker container for the backend is in place, and then run `npm start`.
+Make sure the docker container for the backend is in place and running, and then:
+
+* `npm install`
+* `npm start`
 
 Report issues to the developer, ghostfreeman@gmail.com
 

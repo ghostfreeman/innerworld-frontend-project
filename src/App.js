@@ -126,6 +126,9 @@ const GreetingWrapper = () => {
                 <th>Likelihood</th>
                 <th>Start Date</th>
                 <th>End Date</th>
+                <th>Display in Mornings</th>
+                <th>Display in Afternoons</th>
+                <th>Display in Evenings</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -136,7 +139,10 @@ const GreetingWrapper = () => {
               id={greeting._id} 
               likelihood={greeting.likelihood} 
               start_date={greeting.start_date} 
-              end_date={greeting.end_date} 
+              end_date={greeting.end_date}
+              clamp_morning={greeting.clamp_to_morning}
+              clamp_to_afternoon={greeting.clamp_to_afternoon}
+              clamp_to_evening={greeting.clamp_to_evening}
               stateChanger={setChangeState} 
               updateState={setUpdateState} />
             ))}
@@ -167,20 +173,36 @@ const EditGreeting = ({stateChanger, ...props}) => {
   const [likelihood, setLikelihood] = useState(0)
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [clampMornings, setClampMornings] = useState(false)
+  const [clampAfternoons, setClampAfternoons] = useState(false)
+  const [clampEvenings, setClampEvenings] = useState(false)
+
+
+
+  
 
   const createNewGreeting = () => {
-    axios.post('http://127.0.0.1/greeting/create', {
+    const obj = {
       text: greeting,
       likelihood: likelihood,
       start_date: startDate,
-      end_date: endDate
-    })
+      end_date: endDate,
+      clamp_to_morning: clampMornings === "on" ? true : false,
+      clamp_to_afternoon: clampAfternoons === "on" ? true : false,
+      clamp_to_evening: clampEvenings === "on" ? true : false
+    }
+    console.log({obj})
+
+    axios.post('http://127.0.0.1/greeting/create', obj)
     .then(function (res) {
       setGreeting('')
       setLikelihood(0)
       setStartDate('')
       setEndDate('')
-      stateChanger(greeting);
+      setClampMornings(false)
+      setClampAfternoons(false)
+      setClampEvenings(false)
+      stateChanger(greeting)
     })
     .catch(function (err) {
       console.log(err)
@@ -192,16 +214,45 @@ const EditGreeting = ({stateChanger, ...props}) => {
 
   return (
     <div className="edit-container">
-      <input type='text' placeholder='Greeting Text' name="greeting" onChange={event => setGreeting(event.target.value)} />
-      <input type='number' placeholder='0' name="likelihood" onChange={event => setLikelihood(event.target.value)} />
-      <input type='date' name="start_date" onChange={event => setStartDate(event.target.value)} />
-      <input type='date' name="end_date" onChange={event => setEndDate(event.target.value)} />
+      <div className='form-element'>
+        <label for="greeting">Greeting Text</label>
+        <input type='text' placeholder='Greeting Text' name="greeting" onChange={event => setGreeting(event.target.value)} />
+      </div>
+
+      <div className='form-element'>
+        <label for="likelihood">Likelihood</label>
+        <input type='number' placeholder='0' name="likelihood" onChange={event => setLikelihood(event.target.value)} />
+      </div>
+
+      <div className='form-element'>
+        <label for="start_date">Start Date</label>
+        <input type='date' name="start_date" onChange={event => setStartDate(event.target.value)} />
+      </div>
+
+      <div className='form-element'>
+        <label for="end_date">End Date</label>
+        <input type='date' name="end_date" onChange={event => setEndDate(event.target.value)} />
+      </div>
+
+      <div className='form-element'>
+        <label for="clamp_mornings">Clamp to mornings (00:00 - 11:59)</label>
+        <input type="checkbox" name="clamp_mornings" onChange={event => setClampMornings(event.target.value)}></input>
+      </div>
+
+      <div className='form-element'>
+        <label for="clamp_afternoons">Clamp to afternoons (12:00 - 18:59)</label>
+        <input type="checkbox" name="clamp_afternoons" onChange={event => setClampAfternoons(event.target.value)}></input>
+      </div>
+
+      <div className='form-element'>
+        <label for="clamp_evenings">Clamp to evenings (19:00 - 23:59)</label>
+        <input type="checkbox" name="clamp_evenings" onChange={event => setClampEvenings(event.target.value)}></input>
+      </div>
+
       <button onClick={() => createNewGreeting()}>Create</button>
     </div>
   )
 }
-
-const CreateGreeting = () => {}
 
 const Greeting = ({stateChanger, updateState, ...props}) => {
   const deleteGreeting = (e) => {
@@ -216,16 +267,14 @@ const Greeting = ({stateChanger, updateState, ...props}) => {
     })
   }
 
-  const openUpdateModal = (e) => {
-    console.log("Opening Edit Modal")
-    // updateState(true)
-  }
-
   const id = props.id
   const greeting = props.text
   const likelihood = props.likelihood
   const start_date = props.start_date || null
   const end_date = props.end_date || null
+  const clamp_morning = props.clamp_morning || null
+  const clamp_afternoon = props.clamp_afternoon || null
+  const clamp_evening = props.clamp_evening || null
 
   return (
     <tr>
@@ -250,6 +299,24 @@ const Greeting = ({stateChanger, updateState, ...props}) => {
       <td>
         <div className={['col', 'greeting-end-date']}>
           {end_date}
+        </div>
+      </td>
+
+      <td>
+        <div className={['col', 'greeting-clamp-morning']}>
+          {clamp_morning ? "Yes" : "No"}
+        </div>
+      </td>
+
+      <td>
+        <div className={['col', 'greeting-clamp-afternoon']}>
+          {clamp_afternoon ? "Yes" : "No"}
+        </div>
+      </td>
+
+      <td>
+        <div className={['col', 'greeting-clamp-evening']}>
+          {clamp_evening ? "Yes" : "No"}
         </div>
       </td>
 

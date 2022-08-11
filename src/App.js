@@ -18,12 +18,15 @@ const customStyles = {
 
 const RandomGreeting = () => {
   const [greeting, setGreeting] = useState('')
+  const [isLoaded, setIsLoaded] = useState(false)
   const [error, setError] = useState([])
 
   useEffect(() => {
     axios.get('http://127.0.0.1/greeting')
     .then(function (res) {
-      setGreeting(res.text)
+      console.log("Greeting Res", res)
+      setGreeting(res.data.text)
+      setIsLoaded(true)
     })
     .catch(function (err) {
       setError(err)
@@ -33,11 +36,29 @@ const RandomGreeting = () => {
     })
   })
 
-  return (
+
+  if (error.length > 0) {
+    return (
+      <div>
+        <h2>Guru Meditation: {error.message}</h2>
+      </div>
+    )
+  } else if (!isLoaded) {
+    return (
+      <div>
+        <h2>Please Wait...</h2>
+      </div>
+    )
+  } else {
+    return (
+      <h1>{greeting}</h1>
+    )
+  }
+  /* return (
     <div>
       <h1>{greeting}</h1>
     </div>
-  )
+  ) */
 }
 
 const GreetingWrapper = () => {

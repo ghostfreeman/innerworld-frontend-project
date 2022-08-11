@@ -1,6 +1,5 @@
 import './App.css'
 import React from 'react'
-import ReactDOM from 'react-dom'
 import Modal from 'react-modal'
 
 const { useEffect, useState } = React;
@@ -32,12 +31,10 @@ const GreetingWrapper = () => {
   useEffect(() => {
     axios.get('http://127.0.0.1/greeting/all')
     .then(function (res) {
-      console.log(res)
       setIsLoaded(true)
       setData(res)
     })
     .catch(function (err) {
-      console.log(err)
       setError(err)
     })
     .then(function() {
@@ -51,12 +48,10 @@ const GreetingWrapper = () => {
 
     axios.get('http://127.0.0.1/greeting/all')
     .then(function (res) {
-      console.log(res)
       setIsLoaded(true)
       setData(res)
     })
     .catch(function (err) {
-      console.log(err)
       setError(err)
     })
     .then(function() {
@@ -161,7 +156,6 @@ const EditGreeting = ({stateChanger, ...props}) => {
       end_date: endDate
     })
     .then(function (res) {
-      console.log(res)
       setGreeting('')
       setLikelihood(0)
       setStartDate('')
@@ -193,7 +187,6 @@ const Greeting = ({stateChanger, updateState, ...props}) => {
   const deleteGreeting = (e) => {
     axios.delete('http://127.0.0.1/greeting/' + e)
     .then(function (res) {
-      console.log(res)
       stateChanger(e);
     }).catch(function (err) {
       console.log(err)

@@ -24,7 +24,6 @@ const RandomGreeting = () => {
   useEffect(() => {
     axios.get('http://127.0.0.1/greeting')
     .then(function (res) {
-      console.log("Greeting Res", res)
       setGreeting(res.data.text)
       setIsLoaded(true)
     })
@@ -212,7 +211,6 @@ const EditGreeting = ({stateChanger, ...props}) => {
       clamp_to_afternoon: clampAfternoons === "on" ? true : false,
       clamp_to_evening: clampEvenings === "on" ? true : false
     }
-    console.log({obj})
 
     axios.post('http://127.0.0.1/greeting/create', obj)
     .then(function (res) {

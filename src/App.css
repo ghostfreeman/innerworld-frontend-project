@@ -1,4 +1,8 @@
 .App {
+  
+}
+
+.App h1 {
   text-align: center;
 }
 
@@ -35,4 +39,24 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.greetings-container {
+  margin: 0 auto;
+  width: 980px;
+}
+
+.actions {
+
+}
+
+.actions-list-controller {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.actions-list-controller li {
+  display: inline-block;
+  margin: 0 10px;
 }

@@ -1,14 +1,33 @@
-import './App.css';
-import React from 'react';
+import './App.css'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Modal from 'react-modal'
 
 const { useEffect, useState } = React;
 const axios = require('axios')
 
+const customStyles = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  },
+};
+
+const RandomGreeting = () => {
+
+}
+
 const GreetingWrapper = () => {
   const [data, setData] = useState(null)
   const [isLoaded, setIsLoaded] = useState(false)
-  const [error, setError] = useState([]);
-  const [changeState, setChangeState] = useState('');
+  const [error, setError] = useState([])
+  const [changeState, setChangeState] = useState('')
+  const [modalIsOpen, setIsOpen] = useState(false)
+  const [updateState, setUpdateState] = useState(false)
 
   useEffect(() => {
     axios.get('http://127.0.0.1/greeting/all')
@@ -27,9 +46,8 @@ const GreetingWrapper = () => {
   }, [])
   
   useEffect(() => {
-    console.log("Reload the table")
     setIsLoaded(false)
-    
+
     axios.get('http://127.0.0.1/greeting/all')
     .then(function (res) {
       console.log(res)
@@ -45,9 +63,27 @@ const GreetingWrapper = () => {
     })
   }, [changeState])
 
+  useEffect(() => {
+    if (updateState) {
+      openModal()
+    } else {
+      closeModal()
+    }
+  }, [updateState])
+
+  const openModal = () => {
+    setIsOpen(true)
+  }
+
+  const afterOpenModal = () => {
+
+  }
+
+  const closeModal = () => {
+    setIsOpen(false);
+  }
+
   if (error.length > 0) {
-    console.log({data})
-    console.log({error})
     return (
       <div>
         <h2>Guru Meditation: {error.message}</h2>
@@ -60,7 +96,6 @@ const GreetingWrapper = () => {
       </div>
     )
   } else {
-    console.log(data.data)
     return (
       <div className="greetings-container">
         <h2>Greetings</h2>
@@ -70,7 +105,7 @@ const GreetingWrapper = () => {
             <thead>
               <tr>
                 <th>Greeting</th>
-                <th>Likelihood (higher = more likely)</th>
+                <th>Likelihood</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Actions</th>
@@ -78,17 +113,47 @@ const GreetingWrapper = () => {
             </thead>
             <tbody>
             {data.data.map(greeting => (
-              <Greeting text={greeting.text} id={greeting._id} likelihood={greeting.likelihood} start_date={greeting.start_date} end_date={greeting.end_date} stateChanger={setChangeState} />
+              <Greeting 
+              text={greeting.text} 
+              id={greeting._id} 
+              likelihood={greeting.likelihood} 
+              start_date={greeting.start_date} 
+              end_date={greeting.end_date} 
+              stateChanger={setChangeState} 
+              updateState={setUpdateState} />
             ))}
             </tbody>
           </table>
         </div>
+
+        <Modal
+          isOpen={modalIsOpen}
+          onAfterOpen={afterOpenModal}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Example Modal">
+            <EditGreeting />
+        </Modal>
+            
       </div>
     )
   }
 }
 
-const Greeting = ({stateChanger, ...props}) => {
+const EditGreeting = ({stateChanger, ...props}) => {
+  return (
+    <div className="edit-container">
+      <input type='text' placeholder='Greeting Text' />
+      <input type='number' placeholder='0' />
+      <input type='date' />
+      <input type='date' />
+    </div>
+  )
+}
+
+const CreateGreeting = () => {}
+
+const Greeting = ({stateChanger, updateState, ...props}) => {
   const deleteGreeting = (e) => {
     console.log("Delete Greeting Clicked")
     console.log({e})
@@ -96,7 +161,6 @@ const Greeting = ({stateChanger, ...props}) => {
     axios.delete('http://127.0.0.1/greeting/' + e)
     .then(function (res) {
       console.log(res)
-      // TODO Update the <GreetingWrapper>
       stateChanger(e);
     }).catch(function (err) {
       console.log(err)
@@ -108,6 +172,7 @@ const Greeting = ({stateChanger, ...props}) => {
 
   const openUpdateModal = (e) => {
     console.log("Opening Edit Modal")
+    updateState(true)
   }
 
   const id = props.id
@@ -115,7 +180,6 @@ const Greeting = ({stateChanger, ...props}) => {
   const likelihood = props.likelihood
   const start_date = props.start_date || null
   const end_date = props.end_date || null
-  // const
 
   return (
     <tr>
@@ -147,10 +211,10 @@ const Greeting = ({stateChanger, ...props}) => {
         <div className='actions'>
           <ul className='actions-list-controller'>
             <li>
-              <button onClick={() => {openUpdateModal()}}>Update</button>
+              <button onClick={() => {openUpdateModal()}} className="action">Update</button>
             </li>
             <li>
-              <button onClick={() => {deleteGreeting({id})}}>Delete</button>
+              <button onClick={() => {deleteGreeting({id})}} className="delete">Delete</button>
             </li>
           </ul>
         </div>

@@ -1,6 +1,10 @@
 # Innerworld Frontend
 
-Details to be added
+## Running this app
+
+Make sure the docker container for the backend is in place, and then run `npm start`.
+
+Report issues to the developer, ghostfreeman@gmail.com
 
 ----
 # Getting Started with Create React App

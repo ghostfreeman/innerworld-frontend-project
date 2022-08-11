@@ -47,6 +47,7 @@ const GreetingWrapper = () => {
   
   useEffect(() => {
     setIsLoaded(false)
+    closeModal()
 
     axios.get('http://127.0.0.1/greeting/all')
     .then(function (res) {
@@ -75,12 +76,14 @@ const GreetingWrapper = () => {
     setIsOpen(true)
   }
 
-  const afterOpenModal = () => {
-
-  }
+  const afterOpenModal = () => {}
 
   const closeModal = () => {
     setIsOpen(false);
+  }
+
+  const createNewGreeting = () => {
+    openModal()
   }
 
   if (error.length > 0) {
@@ -126,13 +129,17 @@ const GreetingWrapper = () => {
           </table>
         </div>
 
+        <div>
+          <button onClick={() => {createNewGreeting()}}>Create New Greeting</button>
+        </div>
+
         <Modal
           isOpen={modalIsOpen}
           onAfterOpen={afterOpenModal}
           onRequestClose={closeModal}
           style={customStyles}
           contentLabel="Example Modal">
-            <EditGreeting />
+            <EditGreeting stateChanger={setChangeState} />
         </Modal>
             
       </div>
@@ -141,12 +148,41 @@ const GreetingWrapper = () => {
 }
 
 const EditGreeting = ({stateChanger, ...props}) => {
+  const [greeting, setGreeting] = useState('')
+  const [likelihood, setLikelihood] = useState(0)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
+
+  const createNewGreeting = () => {
+    axios.post('http://127.0.0.1/greeting/create', {
+      text: greeting,
+      likelihood: likelihood,
+      start_date: startDate,
+      end_date: endDate
+    })
+    .then(function (res) {
+      console.log(res)
+      setGreeting('')
+      setLikelihood(0)
+      setStartDate('')
+      setEndDate('')
+      stateChanger(greeting);
+    })
+    .catch(function (err) {
+      console.log(err)
+    })
+    .then(function() {
+      // Always runs
+    })
+  }
+
   return (
     <div className="edit-container">
-      <input type='text' placeholder='Greeting Text' />
-      <input type='number' placeholder='0' />
-      <input type='date' />
-      <input type='date' />
+      <input type='text' placeholder='Greeting Text' name="greeting" onChange={event => setGreeting(event.target.value)} />
+      <input type='number' placeholder='0' name="likelihood" onChange={event => setLikelihood(event.target.value)} />
+      <input type='date' name="start_date" onChange={event => setStartDate(event.target.value)} />
+      <input type='date' name="end_date" onChange={event => setEndDate(event.target.value)} />
+      <button onClick={() => createNewGreeting()}>Create</button>
     </div>
   )
 }
@@ -155,9 +191,6 @@ const CreateGreeting = () => {}
 
 const Greeting = ({stateChanger, updateState, ...props}) => {
   const deleteGreeting = (e) => {
-    console.log("Delete Greeting Clicked")
-    console.log({e})
-
     axios.delete('http://127.0.0.1/greeting/' + e)
     .then(function (res) {
       console.log(res)
@@ -172,7 +205,7 @@ const Greeting = ({stateChanger, updateState, ...props}) => {
 
   const openUpdateModal = (e) => {
     console.log("Opening Edit Modal")
-    updateState(true)
+    // updateState(true)
   }
 
   const id = props.id
@@ -210,9 +243,6 @@ const Greeting = ({stateChanger, updateState, ...props}) => {
       <td>
         <div className='actions'>
           <ul className='actions-list-controller'>
-            <li>
-              <button onClick={() => {openUpdateModal()}} className="action">Update</button>
-            </li>
             <li>
               <button onClick={() => {deleteGreeting({id})}} className="delete">Delete</button>
             </li>

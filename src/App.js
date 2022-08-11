@@ -17,7 +17,27 @@ const customStyles = {
 };
 
 const RandomGreeting = () => {
+  const [greeting, setGreeting] = useState('')
+  const [error, setError] = useState([])
 
+  useEffect(() => {
+    axios.get('http://127.0.0.1/greeting')
+    .then(function (res) {
+      setGreeting(res.text)
+    })
+    .catch(function (err) {
+      setError(err)
+    })
+    .then(function() {
+      // Always runs
+    })
+  })
+
+  return (
+    <div>
+      <h1>{greeting}</h1>
+    </div>
+  )
 }
 
 const GreetingWrapper = () => {
@@ -249,7 +269,7 @@ const Greeting = ({stateChanger, updateState, ...props}) => {
 function App() {
   return (
     <div className="App">
-      <h1>App Served</h1>
+      <RandomGreeting />
       <GreetingWrapper />
     </div>
   );
